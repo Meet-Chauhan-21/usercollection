@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 Forbidden - Access Denied</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff4757;
+            --secondary: #2f3542;
+            --light: #f1f2f6;
+            --dark: #1e272e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 71, 87, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(47, 53, 66, 0.1) 0%, transparent 20%);
+        }
+
+        .error-container {
+            max-width: 600px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .error-icon {
+            font-size: 5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            animation: bounce 1.5s infinite;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-code {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: #ff6b81;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #3d4450;
+            box-shadow: 0 4px 8px rgba(47, 53, 66, 0.3);
+        }
+
+        .lock-animation {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .lock-body {
+            width: 80px;
+            height: 70px;
+            background-color: var(--primary);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .lock-top {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: -20px;
+            left: 25px;
+        }
+
+        .lock-hole {
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            left: 35px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .error-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <!-- Animated lock icon -->
+    <div class="lock-animation">
+        <div class="lock-top"></div>
+        <div class="lock-body">
+            <div class="lock-hole"></div>
+        </div>
+    </div>
+
+    <h1>Access Denied</h1>
+    <div class="error-code">ERROR 403</div>
+    <p>
+        You don't have permission to access this page.
+        <br>Please check your credentials or contact the administrator if you believe this is an error.
+    </p>
+
+    <div class="action-buttons">
+        <a href="/security/home" class="btn">
+            <i class="fas fa-home"></i> Go to Homepage
+        </a>
+        <a href="mailto:admin@example.com" class="btn btn-secondary">
+            <i class="fas fa-envelope"></i> Contact Support
+        </a>
+    </div>
+</div>
+
+<script>
+    // Add shake animation to lock when hovering
+    document.querySelector('.lock-animation').addEventListener('mouseover', function() {
+        this.style.animation = 'shake 0.5s ease';
+    });
+
+    document.querySelector('.lock-animation').addEventListener('animationend', function() {
+        this.style.animation = '';
+    });
+</script>
+</body>
+</html>

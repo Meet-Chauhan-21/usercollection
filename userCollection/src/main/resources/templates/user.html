@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #00796b;
+            --primary-light: #009688;
+            --secondary: #004d40;
+            --accent: #4db6ac;
+            --light: #e0f7fa;
+            --dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light) 0%, #b2ebf2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            width: 100vw;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: inline-block;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            animation: underlineGrow 1s ease-out;
+        }
+
+        @keyframes underlineGrow {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .welcome-message {
+            color: var(--dark);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            height: 100%;
+            padding: 1rem 0;
+        }
+
+        .user-info-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            color: var(--dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card h3 i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .info-card p {
+            color: var(--dark);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 1.5rem;
+            height: 100%;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-wrapper {
+            position: absolute;
+            top: 3rem;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+        }
+
+        .dashboard-footer {
+            text-align: center;
+            padding-top: 1rem;
+        }
+
+        .logout {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logout:active {
+            transform: translateY(0);
+        }
+
+        .logout i {
+            margin-right: 0.5rem;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.05;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                padding: 1.5rem;
+            }
+
+            .dashboard-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                gap: 1rem;
+            }
+
+            .user-info-cards {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, auto);
+            }
+
+            .chart-wrapper {
+                position: relative;
+                height: 200px;
+                top: auto;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Background particles -->
+<div class="particles" id="particles"></div>
+
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>User Dashboard</h2>
+        <div class="welcome-message">
+            Welcome back, <span th:text="${user.username}"></span>! Here's your activity overview.
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="user-info-section">
+            <div class="user-info-cards">
+                <div class="info-card">
+                    <h3><i class="fas fa-user"></i> Username</h3>
+                    <p th:text="${user.username}">user</p>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-shield-alt"></i> Role</h3>
+                    <p th:text="${user.roles}">ROLE_USER</p>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-calendar-alt"></i> Member Since</h3>
+                    <p>January 2023</p>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-chart-line"></i> Activity Score</h3>
+                    <p>85/100</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3 class="chart-title"><i class="fas fa-chart-line"></i> Monthly Activity</h3>
+                <div class="chart-wrapper">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title"><i class="fas fa-tasks"></i> Task Completion</h3>
+                <div class="chart-wrapper">
+                    <canvas id="taskChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-footer">
+        <a class="logout" href="/logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</div>
+
+<script>
+    // Create floating particles
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 15;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+
+            // Random size between 5px and 15px
+            const size = Math.random() * 10 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Random position
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.bottom = `-${size}px`;
+
+            // Random animation duration
+            const duration = Math.random() * 20 + 10;
+            particle.style.animationDuration = `${duration}s`;
+
+            // Random delay
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // Initialize charts
+    function initCharts() {
+        // Activity Chart
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        new Chart(activityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Activity',
+                    data: [65, 59, 80, 81, 56, 72],
+                    backgroundColor: 'rgba(77, 182, 172, 0.2)',
+                    borderColor: 'rgba(0, 121, 107, 1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Task Chart
+        const taskCtx = document.getElementById('taskChart').getContext('2d');
+        new Chart(taskCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'In Progress', 'Pending'],
+                datasets: [{
+                    data: [75, 15, 10],
+                    backgroundColor: [
+                        'rgba(0, 121, 107, 0.8)',
+                        'rgba(77, 182, 172, 0.8)',
+                        'rgba(233, 30, 99, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        createParticles();
+        initCharts();
+    });
+</script>
+</body>
+</html>
