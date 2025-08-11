@@ -2,23 +2,26 @@ package com.userProjects.userCollection.controller;
 
 import com.userProjects.userCollection.entity.User;
 import com.userProjects.userCollection.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/registration")
 public class RegistrationController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder encoder;
+    public RegistrationController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/registration/user")
     public String showRegistrationForm(Model model) {
@@ -26,24 +29,31 @@ public class RegistrationController {
         return "register";
     }
 
-    @PostMapping("/registration/user")
-    public String createUser(User user, Model model) {
+    @GetMapping("/user")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
+        return "register";
+    }
+
+    @PostMapping("/user")
+    public String registerUser(@ModelAttribute("user") User user, Model model) {
         try {
-            // Check if username already exists
-            if (userRepository.findByUsername(user.getUsername()) != null) {
+            // Check if username already exists (more efficient query)
+            if (userRepository.existsByUsername(user.getUsername())) {
                 model.addAttribute("error", "Username already exists. Please choose a different one.");
                 return "register";
             }
             
-            // Validate role
-            String role = user.getRoles() != null ? user.getRoles().toUpperCase() : "USER";
-            if (!role.equals("ADMIN") && !role.equals("USER")) {
-                role = "USER";
+            // Set default role if not provided
+            if (user.getRoles() == null || user.getRoles().isEmpty()) {
+                user.setRoles("USER");
             }
             
-            user.setPassword(encoder.encode(user.getPassword()));
-            user.setRoles(role);
+            // Encode password and save user
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(user.getRoles().toUpperCase());
             userRepository.save(user);
+            
             return "redirect:/security/login?registered";
             
         } catch (DataIntegrityViolationException e) {
@@ -56,7 +66,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/signup")
-    public String signup(User user, Model model) {
-        return createUser(user, model);
+    public String signup(@ModelAttribute("user") User user, Model model) {
+        return registerUser(user, model);
     }
 }
