@@ -2,8 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #4CAF50;
@@ -41,13 +43,16 @@
 
         .register-box {
             background: white;
-            padding: 2.5rem;
+            padding: 1.5rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 100%;
+            width: 95%;
             max-width: 400px;
             text-align: center;
             transform: translateY(0);
+            margin: 20px auto;
+            position: relative;
+            z-index: 1;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -100,14 +105,18 @@
             position: relative;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        input, select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px;
+            margin: 10px 0;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: #fff;
             background-color: var(--light-gray);
         }
 
@@ -174,17 +183,20 @@
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 16px;
             border-radius: 8px;
             border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
             background-color: var(--primary);
             color: white;
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         button:hover {
@@ -225,6 +237,36 @@
 
         .signin-link a:hover::after {
             width: 100%;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background-color: #fde8e8;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-message i {
+            font-size: 18px;
+        }
+
+        .success-message {
+            color: #27ae60;
+            background-color: #e8f8f0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         /* Floating animation */
@@ -268,7 +310,14 @@
 <body>
 <div class="register-box floating">
     <h2>Create Account</h2>
-    <form th:action="@{/registration/user}" method="post" th:object="${user}">
+    
+    <!-- Error Message -->
+    <div th:if="${error}" class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${error}">Error message here</span>
+    </div>
+    
+    <form th:action="@{/registration/user}" method="post" th:object="${user}" onsubmit="return validateForm()">
         <div class="input-container">
             <input type="text" th:field="*{username}" placeholder=" " required id="username" />
             <label for="username" class="input-label">Username</label>
