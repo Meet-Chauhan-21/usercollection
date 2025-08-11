@@ -2,14 +2,10 @@ services:
   - type: web
     name: usercollection
     env: java
-    buildCommand: ./mvnw clean package -DskipTests
+    buildCommand: ./mvnw clean install -DskipTests
     startCommand: java -jar target/userCollection-0.0.1-SNAPSHOT.jar
     envVars:
-      - key: DB_URL
-        sync: false
-      - key: DB_USERNAME
-        sync: false
-      - key: DB_PASSWORD
+      - key: MONGODB_URI
         sync: false
       - key: PORT
-        value: 10000
+        sync: false
