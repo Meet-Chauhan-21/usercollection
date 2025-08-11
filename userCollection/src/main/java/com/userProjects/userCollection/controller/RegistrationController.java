@@ -27,5 +27,11 @@ public class RegistrationController {
         return "redirect:/security/login";
     }
 
-
+    @PostMapping("/signup")
+    public String signup(User user, Model model) {
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setRoles(user.getRoles().toUpperCase()); // Just "ADMIN" or "USER"
+        userRepository.save(user);
+        return "redirect:/security/login";
+    }
 }

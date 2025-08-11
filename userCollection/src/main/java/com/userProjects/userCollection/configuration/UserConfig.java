@@ -41,7 +41,7 @@ public class UserConfig {
         return security
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/security/home", "/security/login", "/security/register", "/registration/**").permitAll()
+                        .requestMatchers("/security/home", "/security/login", "/security/register", "/registration/**", "/signup").permitAll()
                         .requestMatchers("/security/admin/**").hasRole("ADMIN")
                         .requestMatchers("/security/user/**").hasRole("USER")
                         .anyRequest().authenticated()
